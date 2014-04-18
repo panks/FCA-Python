@@ -172,10 +172,12 @@ numAttr = len(attr)
 
 aMat = [[ 0 for i in range(numAttr)] for j in range(numObj)]
 
-print("\nEnter the adjecency matrix in row major order (0 or 1, one element per line):\n")
+print("\nEnter the adjecency matrix in row major order (0 or 1, one row per line):\n")
 for x in range(0, len(obj)):
+    row = input()
+    rowlist = row.split()
     for y in range(0,  len(attr)):
-        aMat[x][y] = input()
+        aMat[x][y] = rowlist[y]
 
 #Get Bipartite Cliques
 bCliques = getBipartiteCliques(aMat)
