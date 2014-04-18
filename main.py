@@ -1,3 +1,5 @@
+import networkx as nx
+import matplotlib.pyplot as plt
 
 
 def printMat(Mat):
@@ -93,14 +95,44 @@ def removeUnclosed(clist):
     print("print flist: ",  flist,  "\n and len ",  len(flist))
     return flist
 
+def printLattice(bCList):
+    G=nx.Graph()
+    for x in range(0, len(bCList)):
+        nodeName = "".join(str(x) for x in bCList[x][0]) + ", " + "".join(str(x) for x in bCList[x][1])
+        G.add_node(nodeName )
+        print(G.nodes())
+        print("===")
+     
+    for x in range(0, len(bCList)):
+        for y in range(x+1, len(bCList)):
+            if set(bCList[x][0]).issubset(set(bCList[y][0])):
+                nodeName1 = "".join(str(m) for m in bCList[x][0]) + ", " + "".join(str(m) for m in bCList[x][1]) 
+                nodeName2 = "".join(str(m) for m in bCList[y][0]) + ", " + "".join(str(m) for m in bCList[y][1])
+                G.add_edge(nodeName1 , nodeName2)
+                hasSuccessor.append(x)
+                hasPredecessor.append(y)
+
+    print(G.nodes())
+    print(G.edges())
+    nx.draw(G)
+    plt.savefig("path.png")
+
+
+
+
+
+
+dictBC = {}
+hasSuccessor = []
+hasPredecessor = []
+
+
 
 obj = input("Input objects seperated by space\n").split()
 numObj = len(obj)
 
 attr = input("Input attributes seperated by space\n").split()
 numAttr = len(attr)
-
-dictBC = {}
 
 aMat = [[ 0 for i in range(numAttr)] for j in range(numObj)]
 
@@ -124,7 +156,12 @@ while bCListSize != bCListSizeCondensed:
                
 print("\nDone\n",  bCliques,  "\nand len ",  len(bCliques))
 
+#filter concepts
 bCliques = removeUnclosed(bCliques)
+
+#sort the concepts based on intent length
+bCliques.sort(key=lambda x: len(x[0]))
+printLattice(bCliques)
 
 
 
