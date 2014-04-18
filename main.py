@@ -194,7 +194,11 @@ while bCListSize != bCListSizeCondensed:
 
 #filter concepts
 bCliques = removeUnclosed(bCliques)
-print("\nNodes of Concept Lattice:\n",  bCliques)
+print("\nNodes of Concept Lattice:\n")
+for x in range(0,  len(bCliques)):
+        extent = "".join(str(m) for m in sorted(bCliques[x][0]))
+        intent = "".join(str(m) for m in sorted(bCliques[x][1]))
+        print ("(", extent,  ",", intent,  ")")
 
 conceptDict = {}
 for x in range(0,  len(bCliques)):
@@ -213,12 +217,14 @@ print("\nLattice has been generated in file 'lattice.png'\n")
 
 #Queries
 while True:
-    qin = input("Enter the query. 'E' for extent and 'I' intent, follow by a comma and then elements seperated by space, Ex- I, 2 3 4\nEnter 'Q' to exit.\n")
+    qin = input("Enter the query. Intent or Extent seperated by space, Ex- 2 3 4 OR a b\nEnter 'Q' to exit.\n")
     if qin == "Q":
         exit(0)
-    s1,  s2 = qin.split(",")
-    key = "".join(str(m) for m in sorted(s2.split()))
-    print(conceptDict[key],  "\n")
+    key = "".join(str(m) for m in sorted(qin.split()))
+    if key in conceptDict:
+        print(', '.join(conceptDict[key]),  "\n")
+    else:
+        print("Not present in Concept lattice\n")
 
 
 
