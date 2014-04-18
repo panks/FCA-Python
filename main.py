@@ -8,15 +8,15 @@ def printMat(Mat):
         for y in range(0,  len(Mat[0])):
             print(Mat[x][y])
         print("\n")
-
+        
+ ###########################################################  
 
 def getBipartiteCliques(aMat):
-    print("In getBC\n")
     cList = []
     aLen = len(aMat)
     bLen = len(aMat[0])
-    printMat(aMat)
-    print(aLen, bLen,  " are aLen and bLen\n\n")
+#    printMat(aMat)
+#   print(aLen, bLen,  " are aLen and bLen\n\n")
     for x in range(0,  aLen):
         tmpList = []
         tmpObj = [obj[x]]
@@ -43,7 +43,8 @@ def getBipartiteCliques(aMat):
         
     return cList
         
-    
+ ###########################################################   
+ 
 def condenseList(inputlist):
     clist = []
     toSkip = []
@@ -71,6 +72,8 @@ def condenseList(inputlist):
             
     return clist
     
+###########################################################  
+     
 def removeUnclosed(clist):
     flist = []
     listo = []
@@ -89,19 +92,18 @@ def removeUnclosed(clist):
                 listo = dictBC[clist[x][1][z]]
             else:
                 listo = list( set(listo).intersection(set(dictBC[clist[x][1][z]] )))
-        print ("printing both list for ",  x,  lista,  listo)
+ #       print ("printing both list for ",  x,  lista,  listo)
         if set(lista) == set(clist[x][1]) and set(listo) == set(clist[x][0]):
             flist.append(clist[x])
-    print("print flist: ",  flist,  "\n and len ",  len(flist))
     return flist
 
+ ###########################################################
+ 
 def printLattice(bCList):
     G=nx.Graph()
     for x in range(0, len(bCList)):
-        nodeName = "".join(str(x) for x in bCList[x][0]) + ", " + "".join(str(x) for x in bCList[x][1])
+        nodeName = "".join(str(m) for m in bCList[x][0]) + ", " + "".join(str(m) for m in bCList[x][1])
         G.add_node(nodeName )
-        print(G.nodes())
-        print("===")
      
     for x in range(0, len(bCList)):
         for y in range(x+1, len(bCList)):
@@ -111,14 +113,49 @@ def printLattice(bCList):
                 G.add_edge(nodeName1 , nodeName2)
                 hasSuccessor.append(x)
                 hasPredecessor.append(y)
-
-    print(G.nodes())
-    print(G.edges())
+                
+    #Creating top most and bottom most node            
+    listo = []
+    lista = []
+    for x in range(0, len(attr)):
+        if listo == []:
+            listo = dictBC[attr[x]]
+        else:
+            listo = list( set(listo).intersection(set(attr[x] )))
+            
+    for x in range(0, len(obj)):
+        if lista == []:
+            lista = dictBC[obj[x]]
+        else:
+            lista = list( set(lista).intersection(set(obj[x] )))
+    if lista == []:
+        lista = ["null"]
+    if listo == []:
+        listo = ["null"]
+    
+    #adding them to graph
+    firstNode = "".join(str(m) for m in listo) + ", " + "".join(str(m) for m in attr)
+    G.add_node(firstNode )
+    lastNode = "".join(str(m) for m in obj) + ", " + "".join(str(m) for m in lista)
+    G.add_node(lastNode )
+    
+    #adding edges to them
+    for x in range(0, len(bCList)):
+        if x not in hasSuccessor:
+            nodeName = "".join(str(m) for m in bCList[x][0]) + ", " + "".join(str(m) for m in bCList[x][1])
+            G.add_edge(nodeName,  lastNode )
+            
+    for x in range(0, len(bCList)):
+        if x not in hasPredecessor:
+            nodeName = "".join(str(m) for m in bCList[x][0]) + ", " + "".join(str(m) for m in bCList[x][1])
+            G.add_edge(nodeName,  firstNode )
     nx.draw(G)
-    plt.savefig("path.png")
+    plt.savefig("lattice.png")
 
 
-
+###########################################################
+ 
+######################## starts here ###########################
 
 
 
@@ -127,16 +164,15 @@ hasSuccessor = []
 hasPredecessor = []
 
 
-
-obj = input("Input objects seperated by space\n").split()
+obj = input("Input objects seperated by space:\n").split()
 numObj = len(obj)
 
-attr = input("Input attributes seperated by space\n").split()
+attr = input("\nInput attributes seperated by space:\n").split()
 numAttr = len(attr)
 
 aMat = [[ 0 for i in range(numAttr)] for j in range(numObj)]
 
-print("Enter the adjecency matrix in row major order (0 or 1, one element per line)\n")
+print("\nEnter the adjecency matrix in row major order (0 or 1, one element per line):\n")
 for x in range(0, len(obj)):
     for y in range(0,  len(attr)):
         aMat[x][y] = input()
@@ -154,17 +190,35 @@ while bCListSize != bCListSizeCondensed:
         bCliques = condenseList(bCliques)
         bCListSizeCondensed = len(bCliques)
                
-print("\nDone\n",  bCliques,  "\nand len ",  len(bCliques))
+
 
 #filter concepts
 bCliques = removeUnclosed(bCliques)
+print("\nNodes of Concept Lattice:\n",  bCliques)
+
+conceptDict = {}
+for x in range(0,  len(bCliques)):
+    object = "".join(str(m) for m in sorted(bCliques[x][0]))
+    attribute = "".join(str(m) for m in sorted(bCliques[x][1]))
+    conceptDict[object ] = set(bCliques[x][1])
+    conceptDict[attribute ] = set(bCliques[x][0])
 
 #sort the concepts based on intent length
 bCliques.sort(key=lambda x: len(x[0]))
+
+#generate the image file containing the lattice
+
 printLattice(bCliques)
+print("\nLattice has been generated in file 'lattice.png'\n")
 
-
-
+#Queries
+while True:
+    qin = input("Enter the query. 'E' for extent and 'I' intent, follow by a comma and then elements seperated by space, Ex- I, 2 3 4\nEnter 'Q' to exit.\n")
+    if qin == "Q":
+        exit(0)
+    s1,  s2 = qin.split(",")
+    key = "".join(str(m) for m in sorted(s2.split()))
+    print(conceptDict[key],  "\n")
 
 
 
