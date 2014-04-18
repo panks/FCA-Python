@@ -1,8 +1,5 @@
 
 
-#numObj = input("Enter the number of objects.. ")
-#numAttr = input("Enter the number of attributes.. ")
-
 def printMat(Mat):
     print("Print matrix\n")
     for x in range(0, len(Mat)):
@@ -81,28 +78,24 @@ numAttr = len(attr)
 
 aMat = [[ 0 for i in range(numAttr)] for j in range(numObj)]
 
-print("Enter the adjecency matrix in row major order\n")
+print("Enter the adjecency matrix in row major order (0 or 1, one element per line)\n")
 for x in range(0, len(obj)):
     for y in range(0,  len(attr)):
         aMat[x][y] = input()
 
-
+#Get Bipartite Cliques
 bCliques = getBipartiteCliques(aMat)
-#print(bCliques)
-
 
 
 bCListSize = len(bCliques)
 bCListSizeCondensed = -1
 
+#Condense bipartite cliques until no change
 while bCListSize != bCListSizeCondensed:
         bCListSize = len(bCliques)
         bCliques = condenseList(bCliques)
         bCListSizeCondensed = len(bCliques)
-        print("Clist size is ",  bCListSizeCondensed)
                
-
-
 print("\nDone\n",  bCliques)
 
 
