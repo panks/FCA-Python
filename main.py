@@ -46,35 +46,26 @@ def getBipartiteCliques(aMat):
 def condenseList(inputlist):
     clist = []
     toSkip = []
-    print("\n\nIn condenlist, got list", inputlist,  "\nand len of list is ",  len(inputlist))
     for x in range(0,  len(inputlist)):
         if x in toSkip:
-            print("Skipping from top")
             continue
         matched = 0;   
         for y in range(x+1, len(inputlist)):
-            print("x is: ",  x,  " and y is ",  y, " values: ",  inputlist[x],  inputlist[y])
             if y in toSkip:
-                print("Skipping")
                 continue
             if set(inputlist[x][0]) == set(inputlist[y][0]):
-                print("in first condition")
                 tmpTuple = inputlist[x][0],  list(set(inputlist[x][1]).union(set(inputlist[y][1])))
-                print("Appending to clist: ",  tmpTuple)
                 clist.append(tmpTuple)
                 toSkip.append(y)
                 matched = 1
                 break
             elif set(inputlist[x][1]) == set(inputlist[y][1]):
-                print("in second condition")
                 tmpTuple = list( set(inputlist[x][0]).union(set(inputlist[y][0])) ),  inputlist[x][1]
-                print("Appending to clist: ",  tmpTuple)
                 clist.append(tmpTuple)
                 toSkip.append(y)
                 matched = 1;
                 break
         if matched == 0:
-            print("Appending to clist: ",  inputlist[x])
             clist.append(inputlist[x])
             
     return clist
