@@ -24,6 +24,7 @@ def getBipartiteCliques(aMat):
                 tmpList.append(attr[y])
                 
         tmp = tmpObj,  tmpList
+        dictBC[obj[x]] = tmpList
         cList.append(tmp)
         
     for x in range(0,  bLen):
@@ -35,6 +36,7 @@ def getBipartiteCliques(aMat):
                 tmpList.append(obj[y])
                 
         tmp = tmpList,  tmpattr
+        dictBC[attr[x]] = tmpList
         cList.append(tmp)
         
     return cList
@@ -67,6 +69,29 @@ def condenseList(inputlist):
             
     return clist
     
+def removeUnclosed(clist):
+    flist = []
+    listo = []
+    lista = []
+    for x in range(0,  len(clist)):
+        lista = []
+        listo = []
+        for y in range(0,  len(clist[x][0])):
+            if lista == []:
+                lista = dictBC[clist[x][0][y]]
+            else:    
+                lista = list( set(lista).intersection( set(dictBC[clist[x][0][y]] )))
+                
+        for z in range(0,  len(clist[x][1])):
+            if listo == []:
+                listo = dictBC[clist[x][1][z]]
+            else:
+                listo = list( set(listo).intersection(set(dictBC[clist[x][1][z]] )))
+        print ("printing both list for ",  x,  lista,  listo)
+        if set(lista) == set(clist[x][1]) and set(listo) == set(clist[x][0]):
+            flist.append(clist[x])
+    print("print flist: ",  flist,  "\n and len ",  len(flist))
+    return flist
 
 
 obj = input("Input objects seperated by space\n").split()
@@ -75,6 +100,7 @@ numObj = len(obj)
 attr = input("Input attributes seperated by space\n").split()
 numAttr = len(attr)
 
+dictBC = {}
 
 aMat = [[ 0 for i in range(numAttr)] for j in range(numObj)]
 
@@ -85,7 +111,7 @@ for x in range(0, len(obj)):
 
 #Get Bipartite Cliques
 bCliques = getBipartiteCliques(aMat)
-
+bCliquesStore = bCliques
 
 bCListSize = len(bCliques)
 bCListSizeCondensed = -1
@@ -96,8 +122,9 @@ while bCListSize != bCListSizeCondensed:
         bCliques = condenseList(bCliques)
         bCListSizeCondensed = len(bCliques)
                
-print("\nDone\n",  bCliques)
+print("\nDone\n",  bCliques,  "\nand len ",  len(bCliques))
 
+bCliques = removeUnclosed(bCliques)
 
 
 
