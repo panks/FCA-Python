@@ -99,7 +99,7 @@ def removeUnclosed(clist):
 
  ###########################################################
  
-def printLattice(bCList):
+def generateLattice(bCList):
     G=nx.Graph()
     for x in range(0, len(bCList)):
         nodeName = "".join(str(m) for m in bCList[x][0]) + ", " + "".join(str(m) for m in bCList[x][1])
@@ -213,8 +213,7 @@ for x in range(0,  len(bCliques)):
 bCliques.sort(key=lambda x: len(x[0]))
 
 #generate the image file containing the lattice
-
-printLattice(bCliques)
+generateLattice(bCliques)
 print("\nLattice has been generated in file 'lattice.png'\n")
 
 #Queries
